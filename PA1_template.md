@@ -1,29 +1,60 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Requirements
 #### data analysis:
-```{r}
+
+```r
 require("dplyr")
 ```
+
+```
+## Loading required package: dplyr
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
 #### plots:
-```{r}
+
+```r
 require("ggplot2")
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```r
 require("lattice")
 ```
+
+```
+## Loading required package: lattice
+```
 ## Loading and preprocessing the data
-```{r}
+
+```r
 activity <- read.csv("activity.csv")
 ```
 
 ## What is mean total number of activityByDayNAsteps taken per day?
 
 ### Make a histogram of the total number of steps taken each day
-```{r}
+
+```r
 activityByDays <- activity %>% 
                    group_by(date) %>% 
                    summarise(stepsSum = sum(steps))
@@ -35,24 +66,38 @@ hist(activityByDays$stepsSum,
      col="blue")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)
+
 ### Mean of the total number of steps taken per day:
-```{r}
+
+```r
 mean(activityByDays$stepsSum, na.rm = TRUE)
 ```
 
+```
+## [1] 10766.19
+```
+
 ### Median of the total number of steps taken per day:
-```{r}
+
+```r
 median(activityByDays$stepsSum, na.rm = TRUE)
 ```
 
+```
+## [1] 10765
+```
+
 ### Clean environment
-```{r}
+
+```r
 rm(activityByDays)
 ```
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 activityByinterval <- activity %>% 
                        group_by(interval) %>% 
                        summarise(stepsMean = mean(steps, na.rm =TRUE))
@@ -68,14 +113,26 @@ plot(activityByinterval$interval,
 axis(1, at = seq(100, 2300, by = 100))
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)
+
 ### Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
 maxStepsInterval <- which.max(activityByinterval$stepsMean)
 activityByinterval[maxStepsInterval,]
 ```
 
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval stepsMean
+##      (int)     (dbl)
+## 1      835  206.1698
+```
+
 ### Clean environment
-```{r}
+
+```r
 rm(activityByinterval, maxStepsInterval)
 ```
 
@@ -83,12 +140,18 @@ rm(activityByinterval, maxStepsInterval)
 ## Imputing missing values
 
 ### Total number of missing values in the dataset
-```{r}
+
+```r
 sum(is.na(activity$steps))
 ```
 
+```
+## [1] 2304
+```
+
 ### Filling in all of the missing values in the dataset.
-```{r}
+
+```r
 activity$weekday <- weekdays(as.Date(activity$date))
 activity$weekday <- factor(activity$weekday, 
                            levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
@@ -105,7 +168,8 @@ activityExtra$stepsExtra <- ifelse(is.na(activityExtra$steps),
 ```
 
 ### Histogram of the total number of steps taken each day and 
-```{r}
+
+```r
 activityExtraMean <- activityExtra %>% 
                       group_by(date) %>%
                       summarise(stepsSum = sum(stepsExtra))
@@ -130,18 +194,31 @@ hist(activityByDays$stepsSum,
 legend("topright", c("Imputed", "Non-imputed"), col=c("red", "blue"), lwd=10)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)
+
 ### Mean of total number of steps taken per day
-```{r}
+
+```r
 mean(activityExtraMean$stepsSum)
 ```
 
+```
+## [1] 10821.21
+```
+
 ### Median of total number of steps taken per day
-```{r}
+
+```r
 median(activityExtraMean$stepsSum)
 ```
 
+```
+## [1] 11015
+```
+
 ### Impact of imputing missing data on the estimates of the total daily number of steps
-```{r}
+
+```r
 activityByDayMean <- activity %>% 
                       group_by (date, weekday)  %>%  
                       summarise(stepsSum = sum(steps)) %>% 
@@ -150,13 +227,29 @@ activityByDayMean <- activity %>%
 activityByDayMean
 ```
 
+```
+## Source: local data frame [7 x 2]
+## 
+##     weekday stepsMean
+##      (fctr)     (dbl)
+## 1    Monday      9975
+## 2   Tuesday      8950
+## 3 Wednesday     11791
+## 4  Thursday      8213
+## 5    Friday     12360
+## 6  Saturday     12535
+## 7    Sunday     12278
+```
+
 ### Clean environment
-```{r}
+
+```r
 rm(activityByDay, activityByDayMean, activityByDays)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r}
+
+```r
 activityExtra <- activityExtra %>% 
                   mutate(weekend = ifelse(weekday == "Saturday" | weekday == "Sunday", 
                                           "weekend", 
@@ -175,12 +268,16 @@ xyplot(stepsMean ~ interval | weekend,
        main = "Average Steps by 5-minute Interval for Weekends and Weekdays")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-18-1.png)
+
 ### Clean environment
-```{r}
+
+```r
 rm(activityExtra, activityExtraMean)
 ```
 
 ## Clean all
-```{r}
+
+```r
 rm(activity)
 ```
